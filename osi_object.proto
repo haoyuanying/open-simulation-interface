@@ -7,20 +7,24 @@ import "osi_common.proto";
 package osi;
 
 //
-// \brief A vehicle (ego or other).
+// \brief A vehicle (host or other).
 //
-// This is basically a BaseObject with additional attributes, such as type and lights. 
-// The origin of the rear (front) axis coordinate system in world coordinates is calculated as: 
-// base.position + R * bbcenter_to_rear (front) for the ego vehicle (R rotates from vehicle to world frame, i.e. inverse orientation of base.orientation). 
+// This is basically a BaseObject with additional attributes, such as type and
+// lights.  The origin of the rear (front) axis coordinate system in world
+// coordinates is calculated as:  base.position + R * bbcenter_to_rear (front)
+// for the host vehicle (R rotates from vehicle to world frame, i.e. inverse
+// orientation of base.orientation).
 // 
-// For all vehicles, including ego vehicles, the position given 
-// in base.position points to the center of the vehicle's bounding box.
+// For all vehicles, including host vehicles, the position given  in
+// base.position points to the center of the vehicle's bounding box.
 //
-// The object coordinates are defined as x-axis is the direction from rear to front of the vehicle, y-axis corresponds to rear axle and z-axis points to vehicle ceiling. 
+// The object coordinates are defined as x-axis is the direction from rear to
+// front of the vehicle, y-axis corresponds to rear axle and z-axis points to
+// vehicle ceiling.
 //
 message Vehicle
 {
-    // The id of the vehicle.
+    // The ID of the vehicle.
     //
     optional Identifier id = 1;
 
@@ -36,15 +40,15 @@ message Vehicle
     //
     optional LightState light_state = 4;
 
-    // Flag defining whether the vehicle is a simulated ego vehicle: True for ego vehicle(s), false for other vehicles.
-    // See the description above!
-    optional bool ego_vehicle = 5;
+    // Flag defining whether the vehicle is a simulated host vehicle: True for
+    // host vehicle(s), false for other vehicles.  See the description above!
+    optional bool host_vehicle = 5;
 
     // The vector pointing from the bounding box center point (base.position) to the middle (in x, y and z) 
     // of the rear axle under neutral load conditions. In object coordinates.
     optional Vector3d bbcenter_to_rear = 6;
 
-    // The ids of the lanes that this vehicle is assigned to.
+    // The IDs of the lanes that this vehicle is assigned to.
     // \note Might be multiple if the vehicle is switching lanes or moving from one lane into another following lane.
     repeated Identifier assigned_lane = 7;
 
@@ -56,18 +60,20 @@ message Vehicle
     // \note Field need not be set if has_Trailer is set to false or use value for non valid id.
     optional Identifier trailer_id = 9;
 
-    // The id of the driver of the (ego) vehicle.
-    // \note Field need not be set if ego_vehicle is set to false or use value for non valid id.
+    // The ID of the driver of the (host) vehicle.
+    // \note Field need not be set if host_vehicle is set to false or use value for non valid id.
     optional Identifier driver = 10;
     
     // The vector pointing from the bounding box center point (base.position) to the middle (in x, y and z)
     // of the front axle under neutral load conditions. In object coordinates.
     optional Vector3d bbcenter_to_front = 11;
     
-    // The flag indicates that if the vehicle is moving. In SensorData, if the vehicle has the same velocity as the ego vehicle, it is hard to 
-    // decide if the vehicle is moving or not. Also, the flag can be used to indicate a vehicle in parking mode. Currently, the vehicle is inherited 
-    // from BaseMoving, and a parked vehicle techincally should be BaseStationary, but it is impossible to switch at the moment.
-    optional bool is_moving = 12;
+    // Static minimal distance in [m] of underbody plane to ground
+    // surface plane (i.e. disregarding driving dynamic effects or road
+    // surface effects) under neutral load conditions. Can be useful to
+    // approximate the clear area under a vehicle that a sensor can see
+    // through.
+    optional double ground_clearance = 12;
 
     // Definition of vehicle types.
     //
@@ -91,7 +97,7 @@ message Vehicle
         
         // Vehicle is a motorbike or moped.
         //
-        TYPE_MOTOR_BIKE = 4;
+        TYPE_MOTORBIKE = 4;
         
         // Vehicle is a bicycle (without motor and specific lights).
         //
@@ -223,7 +229,7 @@ message Vehicle
 //
 message MovingObject
 {
-    // The id of the object.
+    // The ID of the object.
     //
     optional Identifier id = 1;
 
@@ -263,7 +269,7 @@ message MovingObject
 //
 message StationaryObject
 {
-    // The id of the object.
+    // The ID of the object.
     //
     optional Identifier id = 1;
 
